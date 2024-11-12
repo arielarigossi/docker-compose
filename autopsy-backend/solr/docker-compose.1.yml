@@ -1,0 +1,27 @@
+version: '3'
+services:
+  solr:
+    container_name: autopsy-solr
+    image: solr:8.11.0
+    ports:
+     - "8983:8983"
+     - "9983:9983"
+    volumes:
+      - data:/var/solr
+    entrypoint:
+      - docker-entrypoint.sh
+      - solr
+      - start
+      - -c
+      - -f
+    command:
+      - solr-precreate
+      - gettingstarted
+
+volumes:
+  data:
+
+networks:
+  default:
+    name: docker-ufie
+    external: true

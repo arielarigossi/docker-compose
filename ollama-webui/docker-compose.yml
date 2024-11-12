@@ -1,0 +1,39 @@
+# version: '3'
+services:
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - /home/docker/ollama:/app/data  # Persistent storage for Ollama
+    networks:
+      - web_network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]  # Request access to GPU
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    ports:
+      - "8080:8080"  # Expose Open WebUI on port 8080
+    volumes:
+      - /home/docker/open-webui:/app/backend/data  # Persistent storage for Open WebUI
+    networks:
+      - web_network
+    depends_on:
+      - ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]  # Request access to GPU
+
+networks:
+  web_network:
+    driver: bridge
